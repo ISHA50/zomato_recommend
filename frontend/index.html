@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zomato Recommendation</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .banner-container {
+      position: relative;
+      width: 100%;
+    }
+    .banner-image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+    .banner-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+
+    .navbar {
+  background-image: linear-gradient(rgba(237, 230, 230, 0), rgba(237, 232, 232, 0)), url('images/banner.png');
+  background-size: cover;
+  background-position: center;
+  min-height: 400px;
+}
+
+.zomato-logo img {
+  height: 150px; /* Increase size */
+  margin-top: -300px; /* Move up if needed */
+  margin-left: 10px;
+  position: relative;
+  z-index: 2; /* Ensure it's above background overlay */
+}
+
+
+
+.offer-corner-img {
+  position: absolute;
+  bottom: -10px;  /* tweak this for overlap */
+  right: -40px;
+  height: 180px;
+  z-index: 10;
+}
+
+.search-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);  /* Centers the container */
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+}
+.search-container input {
+  padding: 10px;
+  width: 400px;
+  border-radius: 5px;
+  border: none;
+}
+.search-container button {
+  padding: 10px 20px;
+  background-color: #f44336;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+
+  </style>
+  
+</head>
+<body>
+  <!-- Full-width Banner Image with Overlay Text -->
+  <div class="banner-container">
+    <!-- Header with Logo -->
+<!-- Header with Logo (left) and Image (right) -->
+<nav class="navbar bg-white shadow-sm px-4 py-3 d-flex justify-content-between align-items-center">
+  <!-- Left: Zomato Logo -->
+<a class="navbar-brand zomato-logo" href="#">
+  <img src="images/zomato_white.png" alt="Zomato Logo">
+</a>
+
+
+
+
+    <!-- You can also include text if you want -->
+    <!-- <span class="fw-bold text-danger fs-4">Zomato</span> -->
+  
+<div class="search-container">
+  <input type="text" placeholder="Search for pizza, burger, etc..." />
+  <button>Search</button>
+</div>
+
+
+  <!-- Right: Delivery Image -->
+
+
+  <img src="images/50.png" class="offer-corner-img" alt="50% Off Offer">
+</nav>
+
+
+
+<!-- 
+    <div class="banner-text">Discover the Best Cuisines Around You</div>
+  </div> -->
+
+  <div class="container py-4">
+    <!-- <h1 class="text-center text-danger mb-4">Zomato Cuisine Recommendation</h1> -->
+
+    <!-- Search Bar
+    <div class="input-group mb-4">
+      <input id="searchInput" type="text" class="form-control" placeholder="Search for pizza, burger, etc..." />
+      <button id="searchBtn" class="btn btn-danger">Search</button>
+    </div> -->
+
+    <!-- Filters -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <button class="btn btn-outline-primary" onclick="applyCostFilter(1000)">Under ₹250</button>
+      <button class="btn btn-outline-primary" onclick="applyRatingFilter(4.0)">Rating 4.0+</button>
+      <select id="cuisineFilter" class="form-select w-auto">
+        <option selected disabled>Cuisines</option>
+        <option value="Afghani">Afghani</option>
+        <option value="American">American</option>
+        <option value="Chinese">Chinese</option>
+        <option value="Italian">Italian</option>
+        <option value="Mexican">Mexican</option>
+        <option value="NorthIndian">North Indian</option>
+        <option value="South Indian">South Indian</option>
+        <option value="Thai">Thai</option>
+      </select>
+    </div>
+
+    <section id="recentSection" style="margin-top: 30px;">
+  <h2>YOUR RECENT SEARCHES</h2>
+  <div id="recentContainer" class="card-container">
+    <!-- Recent search-based recommendations will be shown here -->
+  </div>
+  </section>
+
+  <!-- User-based History Recommendations -->
+<div class="container mt-5">
+  <h3 class="text-center mb-3">Because You Searched For...</h3>
+  <div id="userHistoryContainer" class="row g-3 justify-content-center"></div>
+</div>
+
+<div class="container mt-5">
+  <h3 class="text-center mb-3">ALL RESTAURANTS</h3>
+  <div id="userHistoryContainer" class="row g-3 justify-content-center"></div>
+</div>
+
+
+    <!-- Results Grid -->
+    <div id="results" class="row g-3 justify-content-center"></div>
+  </div>
+
+ <script>
+  const resContainer = document.getElementById("results");
+
+  const imageMap = {
+    pizza: ["images/pizza1.jpg", "images/pizza2.jpg", "images/pizza3.jpg"],
+    icecream: ["images/ice1","images/ice2","images/ice3"],
+    burger: ["images/burger1.jpg", "images/burger2.jpg"],
+    momos: ["images/momos1.jpg", "images/momos2.jpg"],
+    pasta: ["images/pasta1.jpg"],
+    thai: ["images/thai1.jpg", "images/thai2.jpg"],
+    afghani: ["images/afghani1.jpg"],
+    chinese: ["images/chinese1.jpg"],
+    italian: ["images/SI1.jpg"],
+    american: ["images/american1.jpg"],
+    mexican: ["images/mexican1.jpg"],
+    "north indian": ["images/indian1.jpg", "images/indian2.jpg"],
+    "southindian": ["images/south1.jpg", "images/SI2.jpg","images/SI3.jpg","images/SI4.jpg","images/SI5.jpg","images/SI6.jpg","images/SI7.jpg","images/SI8.jpg",
+    "images/SI9.jpg","images/SI10.jpg"],
+    default: ["images/food1.jpg"]
+  };
+
+  function getRandomImage(cuisineStr) {
+    const cuisine = cuisineStr.toLowerCase();
+    for (const key in imageMap) {
+      if (cuisine.includes(key)) {
+        const imgs = imageMap[key];
+        return imgs[Math.floor(Math.random() * imgs.length)];
+      }
+    }
+    return imageMap.default[Math.floor(Math.random() * imageMap.default.length)];
+  }
+
+  async function fetchAndDisplay(queryParam) {
+    resContainer.innerHTML = "Loading...";
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/search?q=${encodeURIComponent(queryParam)}`);
+      const data = await response.json();
+
+      if (data.length === 0) {
+        resContainer.innerHTML = '<p class="text-center">No results found.</p>';
+        return;
+      }
+
+      resContainer.innerHTML = data.map(item => `
+        <div class="col-md-3">
+          <div class="card h-100">
+            <img src="${getRandomImage(item.Cuisines)}" class="card-img-top" alt="${item.RestaurantName}" style="height:200px;object-fit:cover;">
+            <div class="card-body">
+              <h5 class="card-title">${item.RestaurantName}</h5>
+              <p><strong>Cuisines:</strong> ${item.Cuisines}</p>
+              <p><strong>City:</strong> ${item.City}</p>
+              <p><strong>Rating:</strong> ⭐ ${item.Rating}</p>
+              <p><strong>Cost:</strong> ₹${item.Average_Cost_for_two}</p>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      resContainer.innerHTML = '<p class="text-center text-danger">Failed to load results.</p>';
+    }
+  }
+
+  document.getElementById("searchBtn").addEventListener("click", () => {
+    const query = document.getElementById("searchInput").value.trim();
+    if (query) window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+  });
+
+  document.getElementById("cuisineFilter").addEventListener("change", (e) => {
+    const cuisine = e.target.value;
+    fetchAndDisplay(cuisine);
+  });
+
+  function applyCostFilter(maxCost) {
+    fetchAndDisplay(maxCost);
+  }
+
+  function applyRatingFilter(minRating) {
+    fetchAndDisplay(minRating);
+  }
+
+  window.onload = async () => {
+    resContainer.innerHTML = "Loading...";
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/default?q=all`);
+      const data = await response.json();
+
+      resContainer.innerHTML = data.map(item => `
+        <div class="col-md-3">
+          <div class="card h-100">
+            <img src="${getRandomImage(item.Cuisines)}" class="card-img-top" alt="${item.RestaurantName}" style="height:200px;object-fit:cover;">
+            <div class="card-body">
+              <h5 class="card-title">${item.RestaurantName}</h5>
+              <p><strong>Cuisines:</strong> ${item.Cuisines}</p>
+              <p><strong>City:</strong> ${item.City}</p>
+              <p><strong>Rating:</strong> ⭐ ${item.Rating}</p>
+              <p><strong>Cost:</strong> ₹${item.Average_Cost_for_two}</p>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    } catch (err) {
+      console.error("Error loading default data:", err);
+      resContainer.innerHTML = '<p class="text-danger text-center">Failed to load default restaurants.</p>';
+    }
+  };
+</script>
+
+<script src="recent.js"></script>
+
+
+</body>
+</html>

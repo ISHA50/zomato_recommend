@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zomato Style Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #fff5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      width: 70%;
+      height: 500px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: #fff;
+    }
+
+    .login-left {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 100%;
+}
+
+.login-left img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;      /* Ensures it fills container */
+  object-position: center;
+  transition: opacity 0.8s ease-in-out;
+  opacity: 0;
+  z-index: 1;
+}
+
+.login-left img.active {
+  opacity: 1;
+  z-index: 2;
+}
+
+    .login-right {
+      flex: 1;
+      background: #fff;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-right h2 {
+      color: #e23744;
+      font-size: 32px;
+      margin-bottom: 25px;
+    }
+
+    .login-right input {
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .login-right button {
+      padding: 12px;
+      background-color: #e23744;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-right button:hover {
+      background-color: #c92c3a;
+    }
+
+    .login-right p {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .login-right a {
+      color: #e23744;
+      text-decoration: none;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+      }
+      .login-left {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="login-left">
+      <!-- Slideshow images -->
+      <img src="images/ad1.jpg" class="active" alt="Slide 1">
+      <img src="images/ad2.jpg" alt="Slide 2">
+      <img src="images/ad3.jpg" alt="Slide 3">
+      <img src="images/ad5.jpg" alt="Slide 5">
+      
+    </div>
+
+    <div class="login-right">
+      <h2>Welcome Back</h2>
+      <form id="loginForm">
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+
+      <p id="message"></p>
+      <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+    </div>
+  </div>
+
+  <script>
+    // Slideshow logic
+    const slides = document.querySelectorAll(".login-left img");
+    let index = 0;
+
+    setInterval(() => {
+      slides[index].classList.remove("active");
+      index = (index + 1) % slides.length;
+      slides[index].classList.add("active");
+    }, 2500); // changes every 2.5 seconds
+
+    // Login logic
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message) {
+          localStorage.setItem("user_id", data.user_id);
+          document.getElementById("message").innerText = "✅ Login successful!";
+          window.location.href = "index.html";
+        } else {
+          document.getElementById("message").innerText = "❌ " + (data.error || "Login failed");
+        }
+      })
+      .catch(() => {
+        document.getElementById("message").innerText = "❌ Server error";
+      });
+    });
+  </script>
+</body>
+</html>

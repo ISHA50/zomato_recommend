@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zomato Splash Screen</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background-color: #e23744; /* ✅ Zomato red */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo {
+      max-width: 90%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- Replace with your cropped image path -->
+  <img src="images/open.png" alt="Zomato Logo" class="logo" />
+
+  <script>
+    // Redirect after 3 seconds
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 3000);
+  </script>
+</body>
+</html>
