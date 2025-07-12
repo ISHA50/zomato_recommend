@@ -5,7 +5,7 @@ import os
 
 # Load dataset
 df = pd.read_csv("data/zomato.csv")
-
+print(df.shape)
 # ----------------- Data Cleaning -----------------
 
 # Drop duplicates
@@ -33,6 +33,7 @@ df.reset_index(drop=True, inplace=True)
 # Save cleaned data
 df.to_csv("Zomato_Cleaned.csv", index=False)
 print("✅ Cleaned data saved to 'Zomato_Cleaned.csv'")
+print("Final shape:",df.shape)
 
 # ----------------- Data Visualization -----------------
 

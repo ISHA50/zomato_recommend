@@ -82,6 +82,69 @@
 
 
 
+  body {
+    background-image: url('images/maroon.jpg'); /* adjust path */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 100vh;
+  }
+
+
+  .logout-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: white;
+  color: #e74c3c;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #e74c3c;
+  color: white;
+}
+
+#recentSection h2 {
+  color: #ffffff;
+}
+
+
+.container h3{
+  color: #ffffff;
+}
+
+
+.card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple-animation 0.6s linear;
+  background-color: rgba(255, 255, 255, 0.6); /* or rgba(0,0,0,0.3) */
+  pointer-events: none;
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+
+
   </style>
   
 </head>
@@ -92,9 +155,15 @@
 <!-- Header with Logo (left) and Image (right) -->
 <nav class="navbar bg-white shadow-sm px-4 py-3 d-flex justify-content-between align-items-center">
   <!-- Left: Zomato Logo -->
+
+
 <a class="navbar-brand zomato-logo" href="#">
-  <img src="images/zomato_white.png" alt="Zomato Logo">
+  <img src="images/logo.png" alt="Zomato Logo" style="height: 400px !important; width: auto !important; max-height: none !important; margin-left: -90px;">
 </a>
+
+
+<!-- Logout Button -->
+<button id="logoutBtn" class="logout-button">Logout</button>
 
 
 
@@ -103,9 +172,11 @@
     <!-- <span class="fw-bold text-danger fs-4">Zomato</span> -->
   
 <div class="search-container">
-  <input type="text" placeholder="Search for pizza, burger, etc..." />
-  <button>Search</button>
+<input id="searchInput" type="text" class="form-control" placeholder="Search for pizza, burger, etc..." />
+      <button id="searchBtn" class="btn btn-danger">Search</button>
 </div>
+
+
 
 
   <!-- Right: Delivery Image -->
@@ -123,17 +194,17 @@
   <div class="container py-4">
     <!-- <h1 class="text-center text-danger mb-4">Zomato Cuisine Recommendation</h1> -->
 
-    <!-- Search Bar
-    <div class="input-group mb-4">
+    <!-- Search Bar -->
+    <!-- <div class="input-group mb-4">
       <input id="searchInput" type="text" class="form-control" placeholder="Search for pizza, burger, etc..." />
       <button id="searchBtn" class="btn btn-danger">Search</button>
     </div> -->
 
     <!-- Filters -->
-    <div class="d-flex flex-wrap gap-2 mb-4">
-      <button class="btn btn-outline-primary" onclick="applyCostFilter(1000)">Under ₹250</button>
-      <button class="btn btn-outline-primary" onclick="applyRatingFilter(4.0)">Rating 4.0+</button>
-      <select id="cuisineFilter" class="form-select w-auto">
+    <!-- <div class="d-flex flex-wrap gap-2 mb-4">
+      <button class="btn btn-outline-primary" onclick="applyCostFilter(250)">Under ₹250</button>
+      <button class="btn btn-outline-primary" onclick="applyRatingFilter(4.0)">Rating 4.0+</button> -->
+      <!-- <select id="cuisineFilter" class="form-select w-auto">
         <option selected disabled>Cuisines</option>
         <option value="Afghani">Afghani</option>
         <option value="American">American</option>
@@ -143,26 +214,36 @@
         <option value="NorthIndian">North Indian</option>
         <option value="South Indian">South Indian</option>
         <option value="Thai">Thai</option>
-      </select>
+      </select> -->
+
+       <select id="cuisineFilter" class="form-select w-auto">
+  <option value="" disabled selected>Cuisines</option>
+</select>
     </div>
 
-    <section id="recentSection" style="margin-top: 30px;">
+    <section id="recentSection" style="margin-top: 30px; margin-left: 30px">
   <h2>YOUR RECENT SEARCHES</h2>
   <div id="recentContainer" class="card-container">
     <!-- Recent search-based recommendations will be shown here -->
   </div>
   </section>
-
-  <!-- User-based History Recommendations -->
-<div class="container mt-5">
+<!-- 
+  User-based History Recommendations --> 
+ <div class="container mt-5">
   <h3 class="text-center mb-3">Because You Searched For...</h3>
   <div id="userHistoryContainer" class="row g-3 justify-content-center"></div>
-</div>
+</div> 
+
+
+
 
 <div class="container mt-5">
   <h3 class="text-center mb-3">ALL RESTAURANTS</h3>
-  <div id="userHistoryContainer" class="row g-3 justify-content-center"></div>
-</div>
+  
+
+
+
+
 
 
     <!-- Results Grid -->
@@ -170,24 +251,148 @@
   </div>
 
  <script>
+
+
+
+function fetchAndDisplay(query, maxCost, minRating) {
+  if (!query) query = "all";
+
+  let url = "http://127.0.0.1:5000/default?q=" + encodeURIComponent(query);
+  const params = [];
+
+  if (maxCost !== null) {
+    console.log("✅ Applying cost filter:", maxCost);
+    params.push("max_cost=" + encodeURIComponent(maxCost));
+  }
+
+  if (minRating !== null) {
+    console.log("✅ Applying rating filter:", minRating);
+    params.push("min_rating=" + encodeURIComponent(minRating));
+  }
+
+  if (params.length > 0) {
+    url += "&" + params.join("&");
+  }
+
+  console.log("🌐 Final URL:", url);
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      console.log("📦 Received data:", data);
+      renderResults(data);
+    })
+    .catch(error => {
+      console.error("❌ Fetch failed:", error);
+      document.getElementById("searchResults").innerHTML =
+        '<p class="text-danger">Failed to fetch results</p>';
+    });
+}
+
+
+
+
+function applyCostFilter(maxCost) {
+  console.log("Applying Cost Filter:", maxCost)
+  fetchAndDisplay("all", maxCost, null);
+}
+
+function applyRatingFilter(minRating) {
+  console.log("Applying Rating Filter:", minRating)
+  fetchAndDisplay("all", null, minRating);
+}
+
+
+
+
+  async function loadHistoryRecommendations() {
+  const userId = localStorage.getItem("user_id");
+  if (!userId) return;
+
+  try {
+    const res = await fetch('http://127.0.0.1:5000/history_recommend?user_id=${userId}');
+    const data = await res.json();
+    renderCards("userHistoryContainer", data.recommendations || []);
+  } catch (err) {
+    console.error("History recommend error:", err);
+    document.getElementById("userHistoryContainer").innerHTML = '<p class="text-danger">Failed to load personalized recommendations.</p>';
+  }
+}
+
+// Call this when page loads
+window.addEventListener("DOMContentLoaded", () => {
+  loadHistoryRecommendations();
+});
+
+
+  
+
+  
+  document.getElementById('logoutBtn').addEventListener('click', function () {
+    // Optional: Clear localStorage/sessionStorage if you store login state
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Redirect to login.html
+    window.location.href = "login.html";
+  });
+
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+  const userId = localStorage.getItem("user_id");
+  if (!userId) {
+    // Redirect to login if not logged in
+    window.location.href = "login.html";
+  }
+});
+
+
+
+  // Fetch cuisines and populate the dropdown
+
+  async function loadCuisines() {
+  const response = await fetch("http://127.0.0.1:5000/cuisines");
+  const cuisines = await response.json();
+
+  const cuisineDropdown = document.getElementById("cuisineFilter");
+  
+  // Clear existing options (except the first placeholder)
+  cuisineDropdown.innerHTML = '<option value="" disabled selected>Cuisines</option>';
+
+  cuisines.forEach(cuisine => {
+    const option = document.createElement("option");
+    option.value = cuisine;
+    option.textContent = cuisine;
+    cuisineDropdown.appendChild(option);
+  });
+}
+
+// Call it when page loads
+window.addEventListener("DOMContentLoaded", loadCuisines);
   const resContainer = document.getElementById("results");
 
   const imageMap = {
     pizza: ["images/pizza1.jpg", "images/pizza2.jpg", "images/pizza3.jpg"],
-    icecream: ["images/ice1","images/ice2","images/ice3"],
+    icecream: ["images/ice1.jpg","images/ice2.jpg"],
     burger: ["images/burger1.jpg", "images/burger2.jpg"],
     momos: ["images/momos1.jpg", "images/momos2.jpg"],
     pasta: ["images/pasta1.jpg"],
     thai: ["images/thai1.jpg", "images/thai2.jpg"],
+    tea: ["images/chai.jpg"],
     afghani: ["images/afghani1.jpg"],
     chinese: ["images/chinese1.jpg"],
     italian: ["images/SI1.jpg"],
     american: ["images/american1.jpg"],
+    chaat: ["images/american1.jpg"],
     mexican: ["images/mexican1.jpg"],
-    "north indian": ["images/indian1.jpg", "images/indian2.jpg"],
-    "southindian": ["images/south1.jpg", "images/SI2.jpg","images/SI3.jpg","images/SI4.jpg","images/SI5.jpg","images/SI6.jpg","images/SI7.jpg","images/SI8.jpg",
+    north_indian: ["images/indian1.jpg", "images/indian2.jpg"],
+    southindian: ["images/south1.jpg", "images/SI2.jpg","images/SI3.jpg","images/SI4.jpg","images/SI5.jpg","images/SI6.jpg","images/SI7.jpg","images/SI8.jpg",
     "images/SI9.jpg","images/SI10.jpg"],
-    default: ["images/food1.jpg"]
+    default: ["images/default.jpg"],
+    desserts : ["images/desserts1.jpg","images/desserts2.jpg"],
+    bakery: ["images/bakery.jpg"],
+    cafe: ["images/cafe.jpg"]
   };
 
   function getRandomImage(cuisineStr) {
@@ -201,54 +406,100 @@
     return imageMap.default[Math.floor(Math.random() * imageMap.default.length)];
   }
 
-  async function fetchAndDisplay(queryParam) {
-    resContainer.innerHTML = "Loading...";
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/search?q=${encodeURIComponent(queryParam)}`);
-      const data = await response.json();
+async function fetchAndDisplay(queryParam) {
+  resContainer.innerHTML = "Loading...";
 
-      if (data.length === 0) {
-        resContainer.innerHTML = '<p class="text-center">No results found.</p>';
-        return;
-      }
+  try {
+    const userId = localStorage.getItem("user_id");
+    // Start with base URL and add q param as empty string if no keyword
+    let url = `http://127.0.0.1:5000/search?q=`;
 
-      resContainer.innerHTML = data.map(item => `
-        <div class="col-md-3">
-          <div class="card h-100">
-            <img src="${getRandomImage(item.Cuisines)}" class="card-img-top" alt="${item.RestaurantName}" style="height:200px;object-fit:cover;">
-            <div class="card-body">
-              <h5 class="card-title">${item.RestaurantName}</h5>
-              <p><strong>Cuisines:</strong> ${item.Cuisines}</p>
-              <p><strong>City:</strong> ${item.City}</p>
-              <p><strong>Rating:</strong> ⭐ ${item.Rating}</p>
-              <p><strong>Cost:</strong> ₹${item.Average_Cost_for_two}</p>
-            </div>
+    // Append user_id if exists
+    if (userId) {
+      url += `&user_id=${encodeURIComponent(userId)}`;
+    }
+
+    // Parse the queryParam for filters and append them
+    if (queryParam.startsWith('under_')) {
+      const maxCost = parseInt(queryParam.split('_')[1]);
+      url += `&max_cost=${maxCost}`;
+    } else if (queryParam.startsWith('rating_')) {
+      const minRating = parseFloat(queryParam.split('_')[1]);
+      url += `&min_rating=${minRating}`;
+    } else if (queryParam.trim() !== '') {
+      // If queryParam is a keyword (like cuisine), add it as q param
+      url = `http://127.0.0.1:5000/search?q=${encodeURIComponent(queryParam)}`;
+      if (userId) url += `&user_id=${encodeURIComponent(userId)}`;
+    }
+
+    // Update the browser URL to reflect the filter (optional but recommended)
+    window.history.replaceState({}, '', `?q=${encodeURIComponent(queryParam)}`);
+
+    // Fetch data from backend
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.length === 0) {
+      resContainer.innerHTML = '<p class="text-center">No results found.</p>';
+      return;
+    }
+
+    // Render results
+    resContainer.innerHTML = data.map(item => `
+      <div class="col-md-3">
+        <div class="card h-100">
+          <img src="${getRandomImage(item.Cuisines)}" class="card-img-top" alt="${item.RestaurantName}" style="height:200px;object-fit:cover;">
+          <div class="card-body">
+            <h5 class="card-title">${item.RestaurantName}</h5>
+            <p><strong>Cuisines:</strong> ${item.Cuisines}</p>
+            <p><strong>City:</strong> ${item.City}</p>
+            <p><strong>Rating:</strong> ⭐ ${item.Rating}</p>
+            <p><strong>Cost:</strong> ₹${item.Average_Cost_for_two}</p>
           </div>
         </div>
-      `).join("");
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      resContainer.innerHTML = '<p class="text-center text-danger">Failed to load results.</p>';
-    }
-  }
+      </div>
+    `).join("");
 
-  document.getElementById("searchBtn").addEventListener("click", () => {
-    const query = document.getElementById("searchInput").value.trim();
-    if (query) window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    resContainer.innerHTML = '<p class="text-center text-danger">There was an error loading the results. Please try again later.</p>';
+  }
+}
+
+
+
+const searchBtn = document.getElementById("searchBtn");
+const searchInput = document.getElementById("searchInput");
+
+if (searchBtn && searchInput) {
+  searchBtn.addEventListener("click", () => {
+    const query = searchInput.value.trim();
+    const userId = localStorage.getItem("user_id");
+    if (query) {
+      let url = `search.html?q=${encodeURIComponent(query)}`;
+      if (userId) {
+        url += `&user_id=${encodeURIComponent(userId)}`;
+      }
+      window.location.href = url;
+    }
   });
+}
+
+
 
   document.getElementById("cuisineFilter").addEventListener("change", (e) => {
     const cuisine = e.target.value;
     fetchAndDisplay(cuisine);
+    document.getElementById("cuisineFilter").value = cuisine;
   });
 
-  function applyCostFilter(maxCost) {
-    fetchAndDisplay(maxCost);
-  }
+function applyCostFilter(maxCost) {
+  fetchAndDisplay(`under_${maxCost}`);
+}
 
-  function applyRatingFilter(minRating) {
-    fetchAndDisplay(minRating);
-  }
+function applyRatingFilter(minRating) {
+  fetchAndDisplay(`rating_${minRating}`);
+}
 
   window.onload = async () => {
     resContainer.innerHTML = "Loading...";
@@ -275,10 +526,28 @@
       resContainer.innerHTML = '<p class="text-danger text-center">Failed to load default restaurants.</p>';
     }
   };
+
+
+  
+  document.addEventListener("click", function (e) {
+    const card = e.target.closest(".card");
+    if (card) {
+      card.classList.add("clicked");
+      setTimeout(() => {
+        card.classList.remove("clicked");
+      }, 300); // Match this with animation duration
+    }
+  });
+
+
+
+
 </script>
 
 <script src="recent.js"></script>
 
-
+<footer class="text-center text-white py-4" style="background-color: #343a40;">
+  <p class="mb-0">© 2025 Zomato Clone | Made with ❤ by Isha</p>
+</footer>
 </body>
 </html>

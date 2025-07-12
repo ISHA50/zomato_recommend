@@ -3,27 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zomato Splash Screen</title>
+  <title>Foodora Splash</title>
   <style>
-    body {
+    html, body {
       margin: 0;
-      height: 100vh;
-      background-color: #e23744; /* ✅ Zomato red */
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      padding: 0;
+      height: 100%;
     }
 
-    .logo {
-      max-width: 90%;
-      height: auto;
+    body {
+      background: url('images/open.png') no-repeat center center;
+      background-size: cover;
     }
   </style>
 </head>
 <body>
-  <!-- Replace with your cropped image path -->
-  <img src="images/open.png" alt="Zomato Logo" class="logo" />
-
   <script>
     // Redirect after 3 seconds
     setTimeout(() => {

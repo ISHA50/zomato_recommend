@@ -1,2 +1,5 @@
-    # df.dropna(subset=['Cuisines', 'Aggregate rating', 'Average Cost for two'], inplace=True)
-    # df.reset_index(drop=True, inplace=True)
+  plt.scatter(X_pca[:,0],X_pca[:,1], c=kmeans.labels_, cmap='viridis')
+    plt.title("Clustered visualization")
+    plt.xlabel("PCA 1")
+    plt.ylabel("PCA 2")
+    plt.show()

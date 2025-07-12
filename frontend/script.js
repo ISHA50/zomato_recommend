@@ -1,4 +1,3 @@
-<script>
   document.addEventListener("DOMContentLoaded", () => {
     const userId = localStorage.getItem("user_id");
     const resContainer = document.getElementById("results");
@@ -17,12 +16,12 @@
     }
 
     // Handle Search Button
-    document.getElementById("searchBtn").addEventListener("click", () => {
-      const query = document.getElementById("searchInput").value.trim();
-      if (query) {
-        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
-      }
-    });
+    // document.getElementById("searchBtn").addEventListener("click", () => {
+    //   const query = document.getElementById("searchInput").value.trim();
+    //   if (query) {
+    //     window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+    //   }
+    // });
 
     // Handle Cuisine Dropdown Change
     document.getElementById("cuisineFilter").addEventListener("change", async (e) => {
@@ -60,13 +59,25 @@
       return;
     }
 
-    const imageMap = {
-      pizza: ["/images/pizza1.jpg", "/images/pizza2.jpg"],
-      burger: ["/images/burger1.jpg", "/images/burger2.jpg"],
-      italian: ["/images/italian1.jpg", "/images/italian2.jpg"],
-      chinese: ["/images/chinese1.jpg"],
-      default: ["/images/food1.jpg"]
-    };
+  const imageMap = {
+    pizza: ["images/pizza1.jpg", "images/pizza2.jpg", "images/pizza3.jpg"],
+    icecream: ["images/ice1","images/ice2","images/ice3"],
+    burger: ["images/burger1.jpg", "images/burger2.jpg"],
+    momos: ["images/momos1.jpg", "images/momos2.jpg"],
+    pasta: ["images/pasta1.jpg"],
+    thai: ["images/thai1.jpg", "images/thai2.jpg"],
+    chai: ["images/thai1.jpg", "images/thai2.jpg"],
+    afghani: ["images/afghani1.jpg"],
+    chinese: ["images/chinese1.jpg"],
+    italian: ["images/SI1.jpg"],
+    american: ["images/american1.jpg"],
+    chaat: ["images/american1.jpg"],
+    mexican: ["images/mexican1.jpg"],
+    north_indian: ["images/indian1.jpg", "images/indian2.jpg"],
+    southindian: ["images/south1.jpg", "images/SI2.jpg","images/SI3.jpg","images/SI4.jpg","images/SI5.jpg","images/SI6.jpg","images/SI7.jpg","images/SI8.jpg",
+    "images/SI9.jpg","images/SI10.jpg"],
+    default: ["images/pizza5.jpg"]
+  };
 
     function getImage(cuisine) {
       cuisine = cuisine.toLowerCase();
@@ -108,13 +119,25 @@
         recentContainer.innerHTML = '<p class="text-center">No recent searches found.</p>';
         return;
       }
-
-      const imageMap = {
-        pizza: ["/images/pizza1.jpg", "/images/pizza2.jpg"],
-        burger: ["/images/burger1.jpg", "/images/burger2.jpg"],
-        italian: ["/images/italian1.jpg", "/images/italian2.jpg"],
-        default: ["/images/food1.jpg"]
-      };
+  const imageMap = {
+    pizza: ["images/pizza1.jpg", "images/pizza2.jpg", "images/pizza3.jpg"],
+    icecream: ["images/ice1","images/ice2","images/ice3"],
+    burger: ["images/burger1.jpg", "images/burger2.jpg"],
+    momos: ["images/momos1.jpg", "images/momos2.jpg"],
+    pasta: ["images/pasta1.jpg"],
+    thai: ["images/thai1.jpg", "images/thai2.jpg"],
+    chai: ["images/thai1.jpg", "images/thai2.jpg"],
+    afghani: ["images/afghani1.jpg"],
+    chinese: ["images/chinese1.jpg"],
+    italian: ["images/SI1.jpg"],
+    american: ["images/american1.jpg"],
+    chaat: ["images/american1.jpg"],
+    mexican: ["images/mexican1.jpg"],
+    north_indian: ["images/indian1.jpg", "images/indian2.jpg"],
+    southindian: ["images/south1.jpg", "images/SI2.jpg","images/SI3.jpg","images/SI4.jpg","images/SI5.jpg","images/SI6.jpg","images/SI7.jpg","images/SI8.jpg",
+    "images/SI9.jpg","images/SI10.jpg"],
+    default: ["images/pizza5.jpg"]
+  };
 
       function getImage(cuisine) {
         cuisine = cuisine.toLowerCase();
@@ -148,4 +171,3 @@
       recentContainer.innerHTML = '<p class="text-danger text-center">Error loading recent searches.</p>';
     }
   }
-</script>
